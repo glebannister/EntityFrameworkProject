@@ -1,6 +1,5 @@
-﻿using EntityFrameworkProject.Data;
-using EntityFrameworkProject.Model;
-using Microsoft.AspNetCore.Http;
+﻿using EntityFrameworkProject.Entities.Dto;
+using EntityFrameworkProject.Services.ProductSerivce;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EntityFrameworkProject.Controllers
@@ -9,60 +8,48 @@ namespace EntityFrameworkProject.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IProductsService _iProductsService;
 
-        public ProductsController(AppDbContext appDbContext)
+        public ProductsController(IProductsService productsService)
         {
-            _appDbContext = appDbContext;
+            _iProductsService = productsService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProductsByManufactureName(string manufactureName) 
+        {
+            var listOfProducts = await _iProductsService.GetProductsByManufactureName(manufactureName);
+
+            if (!listOfProducts.Any()) 
+            {
+                return NotFound($"No products fabricated by manufacture : {manufactureName} have been found");
+            }
+
+            return Ok(listOfProducts);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct(Product product) 
+        public async Task<IActionResult> AddProduct(ProductApiDto productApiDto) 
         {
-            var isProductExist = _appDbContext.Products.Any(existingProduct => existingProduct.Name == product.Name);
+            var addedProduct = await _iProductsService.AddProduct(productApiDto);
 
-            if (isProductExist)
-            {
-                return Conflict($"The product with name: {product.Name} exists in the DB already");
-            }
-
-            _appDbContext.Products.Add(product);
-            await _appDbContext.SaveChangesAsync();
-
-            return Ok(product);
+            return Ok(addedProduct);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteProduct(int id) 
+        public async Task<IActionResult> DeleteProduct(string name) 
         {
-            var productToDelete = _appDbContext.Products.FirstOrDefault(product => product.Id == id);
+            _iProductsService.DeleteProduct(name);
 
-            if (productToDelete is null)
-            {
-                return NotFound($"No products with ID: {id} have been found");
-            }
-
-            _appDbContext.Products.Remove(productToDelete);
-            await _appDbContext.SaveChangesAsync();
-
-            return Ok(productToDelete);
+            return Ok();
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateProduct(Product product) 
+        public async Task<IActionResult> UpdateProduct(ProductApiDto productApiDto) 
         {
-            var productToUpdate = _appDbContext.Products.SingleOrDefault(existingProduct => existingProduct.Name == product.Name);
+            var productToUpdate = await _iProductsService.UpdateProduct(productApiDto);
 
-            if (productToUpdate is null)
-            {
-                return NotFound($"No products with name: {product.Name} have been found");
-            }
-
-            productToUpdate.Description = product.Description;
-
-            await _appDbContext.SaveChangesAsync();
-
-            return Ok(product);
+            return Ok(productToUpdate);
         }
     }
 }

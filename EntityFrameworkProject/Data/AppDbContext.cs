@@ -1,4 +1,5 @@
-﻿using EntityFrameworkProject.Model;
+﻿using EntityFrameworkProject.Configuration;
+using EntityFrameworkProject.Entities.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkProject.Data
@@ -10,5 +11,11 @@ namespace EntityFrameworkProject.Data
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Manufacture> Manufactures { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+        }
     }
 }
