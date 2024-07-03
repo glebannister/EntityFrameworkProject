@@ -36,10 +36,18 @@ namespace EntityFrameworkProject.Controllers
             return Ok(addedProduct);
         }
 
+        //[HttpDelete]
+        //public async Task<IActionResult> DeleteProduct(string name) 
+        //{
+        //    await _iProductsService.DeleteProduct(name);
+
+        //    return Ok();
+        //}
+
         [HttpDelete]
-        public async Task<IActionResult> DeleteProduct(string name) 
+        public async Task<IActionResult> DeleteAllProducts()
         {
-            _iProductsService.DeleteProduct(name);
+            await _iProductsService.DeleteAllProducts();
 
             return Ok();
         }

@@ -14,7 +14,9 @@ namespace EntityFrameworkProject.Configuration
                 .HasForeignKey(product => product.ManufactureId)
                 .IsRequired();
 
-            //builder.Ignore(product => product.ManufactureId);
+            builder
+                .HasIndex(product => product.Name)
+                .IsUnique();
         }
     }
 }

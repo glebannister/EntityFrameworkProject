@@ -22,6 +22,11 @@ namespace EntityFrameworkProject.Services.ProductService
                 throw new NotFoundException($"No manufactues with ID {productApiDto.ManufactureId} have been found");
             }
 
+            if (await IsProductExist(productApiDto.Name))
+            {
+                throw new ConflictException($"Prodcut with the name {productApiDto.Name} exists in the DB already");
+            }
+
             Product productToAdd = new Product
             {
                 Name = productApiDto.Name,
@@ -48,9 +53,7 @@ namespace EntityFrameworkProject.Services.ProductService
                 throw new NotFoundException($"No manufactures with ID: {productApiDto.Name} have been found");
             }
 
-            var products = await _iProductRepository.GetProductsAsync();
-            var productToUpdate = products
-                .First(product => product.Name.ToLower() == productApiDto.Name.ToLower());
+            var productToUpdate = await _iProductRepository.GetProductAsync(productApiDto.Name);
 
             productToUpdate.Description = productApiDto.Description;
             productToUpdate.Price = productApiDto.Price;
@@ -62,6 +65,11 @@ namespace EntityFrameworkProject.Services.ProductService
             return productToUpdate;
         }
 
+        public async Task DeleteAllProducts()
+        {
+            await _iProductRepository.DeleteAllAsync();
+        }
+
         public async Task<Product> DeleteProduct(string name)
         {
             if (!await IsProductExist(name))
@@ -69,7 +77,7 @@ namespace EntityFrameworkProject.Services.ProductService
                 throw new NotFoundException($"No products with name: {name} were found in the DB");
             }
 
-            var productToDelete = _iProductRepository.GetProductAsync(name).Result;
+            var productToDelete = await _iProductRepository.GetProductAsync(name);
             await _iProductRepository.DeleteAsync(productToDelete);
 
             return productToDelete;
@@ -77,17 +85,14 @@ namespace EntityFrameworkProject.Services.ProductService
 
         public async Task<List<Product>> GetProductsByManufactureName(string manufactureName)
         {
-            var listOfAllProducts = await _iProductRepository.GetProductsAsync();
-
-            return listOfAllProducts
-                .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower()).ToList();
+            return await _iProductRepository.GetProductsAsync(manufactureName);
         }
 
         public async Task<bool> IsProductExist(string name)
         {
-            var products = await _iProductRepository.GetProductsAsync();
+            var product = await _iProductRepository.GetProductAsync(name);
 
-            return products.Any(product => product.Name.ToLower() == name.ToLower());
+            return product is not null;
         }
 
         public async Task<bool> IsManufactureExists(int manufactureId)

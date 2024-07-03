@@ -11,6 +11,8 @@ namespace EntityFrameworkProject.Services.ProductSerivce
 
         public Task<Product> DeleteProduct(string name);
 
+        public  Task DeleteAllProducts();
+
         public Task<List<Product>> GetProductsByManufactureName(string manufactureName);
 
         public Task<bool> IsProductExist(string name);

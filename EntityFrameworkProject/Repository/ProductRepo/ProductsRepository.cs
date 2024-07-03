@@ -31,9 +31,12 @@ namespace EntityFrameworkProject.Repository.ProductRepo
                 .FirstOrDefaultAsync(product => product.Name.ToLower() == productName.ToLower());
         }
 
-        public async Task<List<Product>> GetProductsAsync()
+        public async Task<List<Product>> GetProductsAsync(string manufactureName)
         {
-            return await _appDbContext.Products.ToListAsync();
+            return await _appDbContext.Products
+                .Include(product => product.Manufacture)
+                .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
+                .ToListAsync();
         }
 
         public async Task SaveChangesAsync()
@@ -44,6 +47,15 @@ namespace EntityFrameworkProject.Repository.ProductRepo
         public async Task DeleteAsync(Product product)
         {
             _appDbContext.Products.Remove(product);
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            await _appDbContext.Products.ForEachAsync(product =>
+            {
+                _appDbContext.Products.Remove(product);
+            });
             await _appDbContext.SaveChangesAsync();
         }
     }

@@ -7,6 +7,12 @@ Add-Migration "Initial migration" / dotnet ef migrations add "InitialMigration" 
 dotnet ef database update --project ./EntityFrameworkProject
 UPDATE-DATABASE
 
+ - Apply a migration
+Update-Database NameOfTheMigration / dotnet ef database update NameOfTheMigration
+
+ - Revert to the empty database
+Update-Database 0 / dotnet ef database update 0
+
 1. Controller loh и просто ловит данные
 2. Service их обрабатывает и кидает в DB
 3. Для контроллера можно создавать отдельные API модели
@@ -15,3 +21,7 @@ UPDATE-DATABASE
 - Получил
 - Смапил и закинул в сервис
 - Вернул резалт из сервиса
+
+О репозитории:
+- запросы к БД должны быть наиболее отфильтрованными, чтобы избежать вытягивания 
+больших объёмов данных

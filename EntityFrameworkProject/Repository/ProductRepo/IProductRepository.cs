@@ -10,10 +10,12 @@ namespace EntityFrameworkProject.Repository.ProductRepo
 
         public Task<Product> GetProductAsync(string productName);
 
-        public Task<List<Product>> GetProductsAsync();
+        public Task<List<Product>> GetProductsAsync(string manufactureName);
 
         public Task SaveChangesAsync();
 
         public Task DeleteAsync(Product product);
+
+        public Task DeleteAllAsync();
     }
 }

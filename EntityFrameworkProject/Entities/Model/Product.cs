@@ -23,6 +23,6 @@ namespace EntityFrameworkProject.Entities.Model
 
         public int ManufactureId { get; set; }
 
-        public Manufacture Manufacture { get; set; } = new Manufacture();
+        public Manufacture Manufacture { get; set; }
     }
 }
