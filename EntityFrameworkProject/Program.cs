@@ -2,9 +2,11 @@ using System.Globalization;
 using EntityFrameworkProject.Data;
 using EntityFrameworkProject.Repository.ManufactureRepo;
 using EntityFrameworkProject.Repository.ProductRepo;
+using EntityFrameworkProject.Repository.ShopRepo;
 using EntityFrameworkProject.Services.ManufactureService;
 using EntityFrameworkProject.Services.ProductSerivce;
 using EntityFrameworkProject.Services.ProductService;
+using EntityFrameworkProject.Services.ShopService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,10 +21,12 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("AppDbConnectionString");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<IProductsService, ProductsService>();
-builder.Services.AddScoped<IProductRepository, ProductsRepository>();
 builder.Services.AddScoped<IManufatureService, ManufactureService>();
 builder.Services.AddScoped<IManufactureRepository, ManufactureRepository>();
+builder.Services.AddScoped<IProductsService, ProductsService>();
+builder.Services.AddScoped<IProductRepository, ProductsRepository>();
+builder.Services.AddScoped<IShopService, ShopService>();
+builder.Services.AddScoped<IShopRepository, ShopRepository>();
 
 var app = builder.Build();
 
