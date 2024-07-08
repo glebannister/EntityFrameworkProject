@@ -17,17 +17,21 @@ namespace EntityFrameworkProject.Services.ProductService
 
         public async Task<Product> AddProduct(ProductApiDto productApiDto)
         {
-            if (!await IsManufactureExists(productApiDto.ManufactureId))
-            {
-                throw new NotFoundException($"No manufactues with ID {productApiDto.ManufactureId} have been found");
-            }
+            var productToAdd = await _iProductRepository.GetProductAsync(productApiDto.Name);
 
-            if (await IsProductExist(productApiDto.Name))
+            if (productToAdd is null)
             {
                 throw new ConflictException($"Prodcut with the name {productApiDto.Name} exists in the DB already");
             }
 
-            Product productToAdd = new Product
+            var manufacture = await _iProductRepository.GetManufactureAsync(productApiDto.ManufactureId);
+
+            if (manufacture is null)
+            {
+                throw new NotFoundException($"No manufactues with ID {productApiDto.ManufactureId} have been found");
+            }
+
+            Product newProduct = new Product
             {
                 Name = productApiDto.Name,
                 Description = productApiDto.Description,
@@ -36,29 +40,31 @@ namespace EntityFrameworkProject.Services.ProductService
                 Manufacture = await _iProductRepository.GetManufactureAsync(productApiDto.ManufactureId),
             };
 
-            await _iProductRepository.AddAsync(productToAdd);
+            await _iProductRepository.AddAsync(newProduct);
 
-            return productToAdd;
+            return newProduct;
         }
 
         public async Task<Product> UpdateProduct(ProductApiDto productApiDto)
         {
-            if (!await IsProductExist(productApiDto.Name))
+            var productToUpdate = await _iProductRepository.GetProductAsync(productApiDto.Name);
+
+            if (productToUpdate is null)
             {
                 throw new NotFoundException($"No products with ID: {productApiDto.Name} have been found");
             }
 
-            if (!await IsManufactureExists(productApiDto.ManufactureId))
+            var manufactureToUpdate = await _iProductRepository.GetManufactureAsync(productApiDto.ManufactureId);
+
+            if (manufactureToUpdate is null)
             {
                 throw new NotFoundException($"No manufactures with ID: {productApiDto.Name} have been found");
             }
 
-            var productToUpdate = await _iProductRepository.GetProductAsync(productApiDto.Name);
-
             productToUpdate.Description = productApiDto.Description;
             productToUpdate.Price = productApiDto.Price;
             productToUpdate.ManufactureId = productApiDto.ManufactureId;
-            productToUpdate.Manufacture = await _iProductRepository.GetManufactureAsync(productApiDto.ManufactureId);
+            productToUpdate.Manufacture = manufactureToUpdate;
 
             await _iProductRepository.SaveChangesAsync();
 
@@ -72,12 +78,13 @@ namespace EntityFrameworkProject.Services.ProductService
 
         public async Task<Product> DeleteProduct(string name)
         {
-            if (!await IsProductExist(name))
+            var productToDelete = await _iProductRepository.GetProductAsync(name);
+
+            if (productToDelete is null)
             {
                 throw new NotFoundException($"No products with name: {name} were found in the DB");
             }
 
-            var productToDelete = await _iProductRepository.GetProductAsync(name);
             await _iProductRepository.DeleteAsync(productToDelete);
 
             return productToDelete;
@@ -86,20 +93,6 @@ namespace EntityFrameworkProject.Services.ProductService
         public async Task<List<Product>> GetProductsByManufactureName(string manufactureName)
         {
             return await _iProductRepository.GetProductsAsync(manufactureName);
-        }
-
-        public async Task<bool> IsProductExist(string name)
-        {
-            var product = await _iProductRepository.GetProductAsync(name);
-
-            return product is not null;
-        }
-
-        public async Task<bool> IsManufactureExists(int manufactureId)
-        {
-            var manufacture = await _iProductRepository.GetManufactureAsync(manufactureId);
-
-            return manufacture is not null;
         }
     }
 }

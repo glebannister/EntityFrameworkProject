@@ -28,6 +28,7 @@ namespace EntityFrameworkProject.Repository.ProductRepo
         public async Task<Product> GetProductAsync(string productName)
         {
             return await _appDbContext.Products
+                .Include(product => product.Manufacture)
                 .FirstOrDefaultAsync(product => product.Name.ToLower() == productName.ToLower());
         }
 

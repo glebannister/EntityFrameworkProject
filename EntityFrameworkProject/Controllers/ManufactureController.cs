@@ -15,7 +15,7 @@ namespace EntityFrameworkProject.Controllers
             _iManufatureService = iManufatureService;
         }
 
-        [HttpPost]
+        [HttpPost("AddManufacture")]
         public async Task<IActionResult> AddManufacture(ManufactureDto manufactureDto)
         {
             var manufactureToAdd = await _iManufatureService.AddManufacture(manufactureDto);
@@ -23,7 +23,7 @@ namespace EntityFrameworkProject.Controllers
             return Ok(manufactureToAdd);
         }
 
-        [HttpGet]
+        [HttpGet("GetManufactureProducts")]
         public async Task<IActionResult> GetManufactureProducts(string manufactureName) 
         {
             var listOfProducts = await _iManufatureService.GetManufactureProducts(manufactureName);
@@ -31,7 +31,7 @@ namespace EntityFrameworkProject.Controllers
             return Ok(listOfProducts);
         }
 
-        [HttpDelete]
+        [HttpDelete("DeleteManufacture")]
         public async Task<IActionResult> DeleteManufacture(string manufactureName)
         {
             var manufactureToDelete = await _iManufatureService.DeleteManufacture(manufactureName);

@@ -14,20 +14,63 @@ namespace EntityFrameworkProject.Services.ShopService
             _iShopRepository = iShopRepository;
         }
 
+        public async Task<List<Product>> GetProductsFromShop(string shopName)
+        {
+            var shop = await _iShopRepository.GetShopAsync(shopName);
+
+            if (shop is null) 
+            {
+                throw new NotFoundException($"Shop with name: [{shopName}] is not found in the DB");
+            }
+
+            var productsFromShop = await _iShopRepository.GetProductsAsync(shopName);
+
+            if (!productsFromShop.Any()) 
+            {
+                throw new NotFoundException($"Shop with name: [{shopName}] does not have any products");
+            }
+
+            return productsFromShop;
+        }
+
+        public async Task<List<Shop>> GetShopsWithProducts(string productName)
+        {
+            var product = await _iShopRepository.GetProductAsync(productName);
+
+            if (product is null)
+            {
+                throw new NotFoundException($"Product with name: [{productName}] is not found in the DB");
+            }
+
+            var shopsWithProduct = await _iShopRepository.GetShopsAsync(productName);
+
+            if (!shopsWithProduct.Any())
+            {
+                throw new NotFoundException($"Product with name: [{productName}] does not exist in any shops yet. Our Soviet economy is working on it");
+            }
+
+            return shopsWithProduct;
+        }
+
         public async Task<ProductShop> AddProductToShop(string productName, string shopName)
         {
             var productToAdd = await _iShopRepository.GetProductAsync(productName);
 
             if (productToAdd is null) 
             {
-                throw new NotFoundException($"Product with name {productName} is not found in the DB");
+                throw new NotFoundException($"Product with name [{productName}] is not found in the DB");
             }
 
             var shop = await _iShopRepository.GetShopAsync(shopName);
 
             if (shop is null) 
             {
-                throw new NotFoundException($"Shop with name {shopName} is not found in the DB");
+                throw new NotFoundException($"Shop with name [{shopName}] is not found in the DB");
+            }
+
+            if (await IsProductExistsInShop(productName, shopName)) 
+            {
+                throw new ConflictException($"Product with name [{productName}] exists in the shop [{shopName}] already");
             }
 
             var productShop = new ProductShop
@@ -38,7 +81,7 @@ namespace EntityFrameworkProject.Services.ShopService
                 Shop = shop
             };
 
-            await _iShopRepository.AddProductToShopAsync(productShop);
+            await _iShopRepository.AddProductShopAsync(productShop);
 
             return productShop;
         }
@@ -58,32 +101,44 @@ namespace EntityFrameworkProject.Services.ShopService
 
         public async Task DeleteAllShops()
         {
-            throw new NotImplementedException();
+            await _iShopRepository.DeleteAllAsync();
         }
 
         public async Task<Shop> DeleteShop(string name)
         {
-            throw new NotImplementedException();
-        }
+            var shopToDelete = await _iShopRepository.GetShopAsync(name);
 
-        public async Task<List<Product>> GetProductsFromShop(string shopName)
-        {
-            throw new NotImplementedException();
-        }
+            if (shopToDelete is null) 
+            {
+                throw new NotFoundException($"Shop with name [{name}] is not found in the DB");
+            }
 
-        public async Task<List<Product>> GetShopsWithProducts(string productName)
-        {
-            throw new NotImplementedException();
-        }
+            await _iShopRepository.DeleteAsync(shopToDelete);
 
-        public async Task<bool> IsProductExistsInShop(string productName, string shopName)
-        {
-            throw new NotImplementedException();
+            return shopToDelete;
         }
 
         public async Task<Shop> UpdateShop(ShopApiDto shopApiDto)
         {
-            throw new NotImplementedException();
+            var shopToUpdate = await _iShopRepository.GetShopAsync(shopApiDto.Name);
+
+            if (shopToUpdate is null) 
+            {
+                throw new NotFoundException($"Shop with name [{shopApiDto.Name}] is not found in the DB");
+            }
+
+            shopToUpdate.Address = shopApiDto.Address;
+            
+            await _iShopRepository.SaveChangesAsync();
+
+            return shopToUpdate;
+        }
+
+        private async Task<bool> IsProductExistsInShop(string productName, string shopName)
+        {
+            var productsInTheShop = await _iShopRepository.GetProductsAsync(shopName);
+
+            return productsInTheShop.Any(product => product.Name.ToLower() == productName.ToLower());
         }
     }
 }

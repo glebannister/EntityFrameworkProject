@@ -1,6 +1,6 @@
 ﻿using EntityFrameworkProject.Entities.Dto;
 using EntityFrameworkProject.Services.ShopService;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace EntityFrameworkProject.Controllers
@@ -16,20 +16,60 @@ namespace EntityFrameworkProject.Controllers
             _iShopService = iShopService;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> AddShop(ShopApiDto shopApiDto)
-        //{
-        //    var shopToAdd = await _iShopService.AddShop(shopApiDto);
+        [HttpGet("GetProductsFromShop")]
+        public async Task<IActionResult> GetProductsFromShop(string shopName)
+        {
+            var productsFromShop = await _iShopService.GetProductsFromShop(shopName);
 
-        //    return Ok(shopToAdd);
-        //}
+            return Ok(productsFromShop);
+        }
 
-        [HttpPost]
+        [HttpGet("GetShopsWithProduct")]
+        public async Task<IActionResult> GetShopsWithProduct(string productName)
+        {
+            var shopsWithProduct = await _iShopService.GetShopsWithProducts(productName);
+
+            return Ok(shopsWithProduct);
+        }
+
+        [HttpPost("AddShop")]
+        public async Task<IActionResult> AddShop(ShopApiDto shopApiDto)
+        {
+            var shopToAdd = await _iShopService.AddShop(shopApiDto);
+
+            return Ok(shopToAdd);
+        }
+
+        [HttpPost("AddProductToShop")]
         public async Task<IActionResult> AddProductToShop(string productName, string shopName)
         {
             var productShop = await _iShopService.AddProductToShop(productName, shopName);
 
             return Ok(productShop);
+        }
+
+        [HttpPut("UpdateShop")]
+        public async Task<IActionResult> UpdateShop(ShopApiDto shopApiDto)
+        {
+            var shopUpdate = await _iShopService.UpdateShop(shopApiDto);
+
+            return Ok(shopUpdate);
+        }
+
+        [HttpDelete("DeleteShop")]
+        public async Task<IActionResult> DeleteShop(string name)
+        {
+            var shopDelete = await _iShopService.DeleteShop(name);
+
+            return Ok(shopDelete);
+        }
+
+        [HttpDelete("DeleteAllShops")]
+        public async Task<IActionResult> DeleteAllShops()
+        {
+            await _iShopService.DeleteAllShops();
+
+            return Ok();
         }
     }
 }

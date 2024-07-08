@@ -15,7 +15,7 @@ namespace EntityFrameworkProject.Controllers
             _iProductsService = productsService;
         }
 
-        [HttpGet]
+        [HttpGet("GetProductsByManufactureName")]
         public async Task<IActionResult> GetProductsByManufactureName(string manufactureName) 
         {
             var listOfProducts = await _iProductsService.GetProductsByManufactureName(manufactureName);
@@ -28,7 +28,7 @@ namespace EntityFrameworkProject.Controllers
             return Ok(listOfProducts);
         }
 
-        [HttpPost]
+        [HttpPost("AddProduct")]
         public async Task<IActionResult> AddProduct(ProductApiDto productApiDto) 
         {
             var addedProduct = await _iProductsService.AddProduct(productApiDto);
@@ -36,15 +36,15 @@ namespace EntityFrameworkProject.Controllers
             return Ok(addedProduct);
         }
 
-        //[HttpDelete]
-        //public async Task<IActionResult> DeleteProduct(string name) 
-        //{
-        //    await _iProductsService.DeleteProduct(name);
+        [HttpDelete("DeleteProduct")]
+        public async Task<IActionResult> DeleteProduct(string name)
+        {
+            await _iProductsService.DeleteProduct(name);
 
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
-        [HttpDelete]
+        [HttpDelete("DeleteAllProducts")]
         public async Task<IActionResult> DeleteAllProducts()
         {
             await _iProductsService.DeleteAllProducts();
@@ -52,7 +52,7 @@ namespace EntityFrameworkProject.Controllers
             return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct(ProductApiDto productApiDto) 
         {
             var productToUpdate = await _iProductsService.UpdateProduct(productApiDto);

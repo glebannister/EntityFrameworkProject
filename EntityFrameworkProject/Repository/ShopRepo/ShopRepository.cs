@@ -19,7 +19,7 @@ namespace EntityFrameworkProject.Repository.ShopRepo
             await _appDbContext.SaveChangesAsync();
         }
 
-        public async Task AddProductToShopAsync(ProductShop productShop)
+        public async Task AddProductShopAsync(ProductShop productShop)
         {
             _appDbContext.ProductShops.Add(productShop);
             await _appDbContext.SaveChangesAsync();
@@ -34,6 +34,7 @@ namespace EntityFrameworkProject.Repository.ShopRepo
         public async Task<Product> GetProductAsync(string productName)
         {
             return await _appDbContext.Products
+                .Include(product => product.Manufacture)
                 .FirstOrDefaultAsync(product => product.Name.ToLower() == productName.ToLower());
         }
 
@@ -41,6 +42,7 @@ namespace EntityFrameworkProject.Repository.ShopRepo
         {
             return await _appDbContext.ProductShops
                 .Where(productShop => productShop.Shop.Name.ToLower() == shopName)
+                .Include(product => product.Product.Manufacture)
                 .Select(productShop => productShop.Product)
                 .ToListAsync();
         }

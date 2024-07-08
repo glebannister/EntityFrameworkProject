@@ -6,7 +6,7 @@ namespace EntityFrameworkProject.Repository.ShopRepo
     {
         public Task AddAsync(Shop shop);
 
-        public Task AddProductToShopAsync(ProductShop productShop);
+        public Task AddProductShopAsync(ProductShop productShop);
 
         public Task<List<Shop>> GetShopsAsync(string productName);
 

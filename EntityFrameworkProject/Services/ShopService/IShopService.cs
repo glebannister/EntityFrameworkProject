@@ -17,8 +17,6 @@ namespace EntityFrameworkProject.Services.ShopService
 
         public Task<List<Product>> GetProductsFromShop(string shopName);
 
-        public Task<List<Product>> GetShopsWithProducts(string productName);
-
-        public Task<bool> IsProductExistsInShop(string productName, string shopName);
+        public Task<List<Shop>> GetShopsWithProducts(string productName);
     }
 }
