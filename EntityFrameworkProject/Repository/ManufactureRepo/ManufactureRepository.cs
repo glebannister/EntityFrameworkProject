@@ -37,5 +37,18 @@ namespace EntityFrameworkProject.Repository.ManufactureRepo
                 .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
                 .ToList();
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            await _appDbContext.Manufactures.ForEachAsync(manufacture =>
+            {
+                _appDbContext.Manufactures.Remove(manufacture);
+            });
+        }
     }
 }

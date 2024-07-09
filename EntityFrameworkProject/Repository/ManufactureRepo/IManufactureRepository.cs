@@ -11,5 +11,9 @@ namespace EntityFrameworkProject.Repository.ManufactureRepo
         public Task<Manufacture> GetManufactureAsync(string manufactureName);
 
         public Task<List<Product>> GetManufactureProducts(string manufactureName);
+
+        public Task SaveChangesAsync();
+
+        public Task DeleteAllAsync();
     }
 }

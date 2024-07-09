@@ -53,9 +53,9 @@ namespace EntityFrameworkProject.Controllers
         }
 
         [HttpPut("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct(ProductApiDto productApiDto) 
+        public async Task<IActionResult> UpdateProduct(ProductApiUpdateDto productApiUpdateDto) 
         {
-            var productToUpdate = await _iProductsService.UpdateProduct(productApiDto);
+            var productToUpdate = await _iProductsService.UpdateProduct(productApiUpdateDto);
 
             return Ok(productToUpdate);
         }

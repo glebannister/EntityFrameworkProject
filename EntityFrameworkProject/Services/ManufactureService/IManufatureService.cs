@@ -5,12 +5,14 @@ namespace EntityFrameworkProject.Services.ManufactureService
 {
     public interface IManufatureService
     {
-        public Task<Manufacture> AddManufacture(ManufactureDto manufactureDto);
-
         public Task<List<Product>> GetManufactureProducts(string manufactureName);
+
+        public Task<Manufacture> AddManufacture(ManufactureApiDto manufactureDto);
+
+        public Task<Manufacture> UpdateManufacture(ManufactureApiUpdateDto manufactureDto);
 
         public Task<Manufacture> DeleteManufacture(string manufactureName);
 
-        public Task<bool> IsManufactureExist(string manufactureName);
+        public Task DeleteAllManufactures();
     }
 }

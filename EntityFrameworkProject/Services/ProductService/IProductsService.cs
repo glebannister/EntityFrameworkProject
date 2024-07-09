@@ -7,7 +7,7 @@ namespace EntityFrameworkProject.Services.ProductSerivce
     {
         public Task<Product> AddProduct(ProductApiDto productApiDto);
 
-        public Task<Product> UpdateProduct(ProductApiDto productApiDto);
+        public Task<Product> UpdateProduct(ProductApiUpdateDto productApiUpdateDto);
 
         public Task<Product> DeleteProduct(string name);
 

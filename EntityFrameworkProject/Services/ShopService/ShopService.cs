@@ -118,16 +118,24 @@ namespace EntityFrameworkProject.Services.ShopService
             return shopToDelete;
         }
 
-        public async Task<Shop> UpdateShop(ShopApiDto shopApiDto)
+        public async Task<Shop> UpdateShop(ShopApiUpdateDto shopApiUpdateDto)
         {
-            var shopToUpdate = await _iShopRepository.GetShopAsync(shopApiDto.Name);
+            var shopToUpdate = await _iShopRepository.GetShopAsync(shopApiUpdateDto.OldName);
 
             if (shopToUpdate is null) 
             {
-                throw new NotFoundException($"Shop with name [{shopApiDto.Name}] is not found in the DB");
+                throw new NotFoundException($"Shop with name [{shopApiUpdateDto.NewName}] is not found in the DB");
             }
 
-            shopToUpdate.Address = shopApiDto.Address;
+            var possibleExistingShop = await _iShopRepository.GetShopAsync(shopApiUpdateDto.NewName);
+
+            if (possibleExistingShop is not null)
+            {
+                throw new ConflictException($"Shop with name [{shopApiUpdateDto.NewName}] exists in the DB already");
+            }
+
+            shopToUpdate.Name = shopApiUpdateDto.NewName;
+            shopToUpdate.Address = shopApiUpdateDto.NewAddress;
             
             await _iShopRepository.SaveChangesAsync();
 

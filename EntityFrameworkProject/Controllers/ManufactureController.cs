@@ -15,20 +15,28 @@ namespace EntityFrameworkProject.Controllers
             _iManufatureService = iManufatureService;
         }
 
+        [HttpGet("GetManufactureProducts")]
+        public async Task<IActionResult> GetManufactureProducts(string manufactureName)
+        {
+            var listOfProducts = await _iManufatureService.GetManufactureProducts(manufactureName);
+
+            return Ok(listOfProducts);
+        }
+
         [HttpPost("AddManufacture")]
-        public async Task<IActionResult> AddManufacture(ManufactureDto manufactureDto)
+        public async Task<IActionResult> AddManufacture(ManufactureApiDto manufactureDto)
         {
             var manufactureToAdd = await _iManufatureService.AddManufacture(manufactureDto);
 
             return Ok(manufactureToAdd);
         }
 
-        [HttpGet("GetManufactureProducts")]
-        public async Task<IActionResult> GetManufactureProducts(string manufactureName) 
+        [HttpPut("UpdateManufacture")]
+        public async Task<IActionResult> UpdateManufacture(ManufactureApiUpdateDto manufactureDtoUpdate)
         {
-            var listOfProducts = await _iManufatureService.GetManufactureProducts(manufactureName);
+            var manufactureToUpdate = await _iManufatureService.UpdateManufacture(manufactureDtoUpdate);
 
-            return Ok(listOfProducts);
+            return Ok(manufactureToUpdate);
         }
 
         [HttpDelete("DeleteManufacture")]
@@ -37,6 +45,14 @@ namespace EntityFrameworkProject.Controllers
             var manufactureToDelete = await _iManufatureService.DeleteManufacture(manufactureName);
 
             return Ok(manufactureToDelete);
+        }
+
+        [HttpDelete("DeleteAllManufactures")]
+        public async Task<IActionResult> DeleteAllManufactures()
+        {
+            await _iManufatureService.DeleteAllManufactures();
+
+            return Ok();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace EntityFrameworkProject.Services.ShopService
     {
         public Task<Shop> AddShop(ShopApiDto shopApiDto);
 
-        public Task<Shop> UpdateShop(ShopApiDto shopApiDto);
+        public Task<Shop> UpdateShop(ShopApiUpdateDto shopApiDto);
 
         public Task<ProductShop> AddProductToShop(string productName, string shopName);
 
