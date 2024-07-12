@@ -1,5 +1,5 @@
 ﻿using GlobalMarket.Core.Configuration;
-using GlobalMarket.Core.Models;
+using GlobalMarket.Core.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace GlobalMarket.Core.Repository
