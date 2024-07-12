@@ -1,29 +1,30 @@
-﻿using EntityFrameworkProject.Entities.Dto;
+﻿using EntityFrameworkProject.Data;
+using EntityFrameworkProject.Entities.Dto;
 using EntityFrameworkProject.Entities.Model;
 using EntityFrameworkProject.Exceptions;
-using EntityFrameworkProject.Repository.ShopRepo;
+using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkProject.Services.ShopService
 {
     public class ShopService : IShopService
     {
-        private readonly IShopRepository _iShopRepository;
+        private readonly AppDbContext _appDbContext;
 
-        public ShopService(IShopRepository iShopRepository)
+        public ShopService(AppDbContext appDbContext)
         {
-            _iShopRepository = iShopRepository;
+            _appDbContext = appDbContext;
         }
 
         public async Task<List<Product>> GetProductsFromShop(string shopName)
         {
-            var shop = await _iShopRepository.GetShopAsync(shopName);
+            var shop = await GetShopDbAsync(shopName);
 
             if (shop is null) 
             {
                 throw new NotFoundException($"Shop with name: [{shopName}] is not found in the DB");
             }
 
-            var productsFromShop = await _iShopRepository.GetProductsAsync(shopName);
+            var productsFromShop = await GetProductsDbAsync(shopName);
 
             if (!productsFromShop.Any()) 
             {
@@ -35,14 +36,17 @@ namespace EntityFrameworkProject.Services.ShopService
 
         public async Task<List<Shop>> GetShopsWithProducts(string productName)
         {
-            var product = await _iShopRepository.GetProductAsync(productName);
+            var product = await GetProductDbAsync(productName);
 
             if (product is null)
             {
                 throw new NotFoundException($"Product with name: [{productName}] is not found in the DB");
             }
 
-            var shopsWithProduct = await _iShopRepository.GetShopsAsync(productName);
+            var shopsWithProduct = await _appDbContext.ProductShops
+                .Where(productShop => productShop.Product.Name.Contains(productName))
+                .Select(productShop => productShop.Shop)
+                .ToListAsync();
 
             if (!shopsWithProduct.Any())
             {
@@ -54,14 +58,14 @@ namespace EntityFrameworkProject.Services.ShopService
 
         public async Task<ProductShop> AddProductToShop(string productName, string shopName)
         {
-            var productToAdd = await _iShopRepository.GetProductAsync(productName);
+            var productToAdd = await GetProductDbAsync(productName);
 
             if (productToAdd is null) 
             {
                 throw new NotFoundException($"Product with name [{productName}] is not found in the DB");
             }
 
-            var shop = await _iShopRepository.GetShopAsync(shopName);
+            var shop = await GetShopDbAsync(shopName);
 
             if (shop is null) 
             {
@@ -81,7 +85,7 @@ namespace EntityFrameworkProject.Services.ShopService
                 Shop = shop
             };
 
-            await _iShopRepository.AddProductShopAsync(productShop);
+            await AddProductShopAsync(productShop);
 
             return productShop;
         }
@@ -94,40 +98,46 @@ namespace EntityFrameworkProject.Services.ShopService
                 Address = shopApiDto.Address
             };
 
-            await _iShopRepository.AddAsync(shopToAdd);
+            await AddAsync(shopToAdd);
 
             return shopToAdd;
         }
 
         public async Task DeleteAllShops()
         {
-            await _iShopRepository.DeleteAllAsync();
+            await _appDbContext.Shops.ForEachAsync(shop =>
+            {
+                _appDbContext.Shops.Remove(shop);
+            });
+
+            await _appDbContext.SaveChangesAsync();
         }
 
         public async Task<Shop> DeleteShop(string name)
         {
-            var shopToDelete = await _iShopRepository.GetShopAsync(name);
+            var shopToDelete = await GetShopDbAsync(name);
 
             if (shopToDelete is null) 
             {
                 throw new NotFoundException($"Shop with name [{name}] is not found in the DB");
             }
 
-            await _iShopRepository.DeleteAsync(shopToDelete);
+            _appDbContext.Shops.Remove(shopToDelete);
+            await _appDbContext.SaveChangesAsync();
 
             return shopToDelete;
         }
 
         public async Task<Shop> UpdateShop(ShopApiUpdateDto shopApiUpdateDto)
         {
-            var shopToUpdate = await _iShopRepository.GetShopAsync(shopApiUpdateDto.OldName);
+            var shopToUpdate = await GetShopDbAsync(shopApiUpdateDto.OldName);
 
             if (shopToUpdate is null) 
             {
                 throw new NotFoundException($"Shop with name [{shopApiUpdateDto.NewName}] is not found in the DB");
             }
 
-            var possibleExistingShop = await _iShopRepository.GetShopAsync(shopApiUpdateDto.NewName);
+            var possibleExistingShop = await GetShopDbAsync(shopApiUpdateDto.NewName);
 
             if (possibleExistingShop is not null)
             {
@@ -136,17 +146,51 @@ namespace EntityFrameworkProject.Services.ShopService
 
             shopToUpdate.Name = shopApiUpdateDto.NewName;
             shopToUpdate.Address = shopApiUpdateDto.NewAddress;
-            
-            await _iShopRepository.SaveChangesAsync();
+
+            await _appDbContext.SaveChangesAsync();
 
             return shopToUpdate;
         }
 
         private async Task<bool> IsProductExistsInShop(string productName, string shopName)
         {
-            var productsInTheShop = await _iShopRepository.GetProductsAsync(shopName);
+            var productsInTheShop = await GetProductsDbAsync(shopName);
 
             return productsInTheShop.Any(product => product.Name.ToLower() == productName.ToLower());
+        }
+
+        public async Task AddAsync(Shop shop)
+        {
+            _appDbContext.Shops.Add(shop);
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        public async Task AddProductShopAsync(ProductShop productShop)
+        {
+            _appDbContext.ProductShops.Add(productShop);
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        private async Task<Shop> GetShopDbAsync(string shopName)
+        {
+            return await _appDbContext.Shops
+                .FirstOrDefaultAsync(shop => shop.Name.ToLower() == shopName.ToLower());
+        }
+
+        private async Task<Product> GetProductDbAsync(string productName)
+        {
+            return await _appDbContext.Products
+                .Include(product => product.Manufacture)
+                .FirstOrDefaultAsync(product => product.Name.ToLower() == productName.ToLower());
+        }
+
+        private async Task<List<Product>> GetProductsDbAsync(string shopName)
+        {
+            return await _appDbContext.ProductShops
+                .Where(productShop => productShop.Shop.Name.ToLower() == shopName)
+                .Include(product => product.Product.Manufacture)
+                .Select(productShop => productShop.Product)
+                .ToListAsync();
         }
     }
 }

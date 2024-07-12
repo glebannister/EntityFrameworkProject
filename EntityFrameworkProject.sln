@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkProject", "EntityFrameworkProject\EntityFrameworkProject.csproj", "{6F971680-E2A6-411F-AA81-B052A12C3F93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkProject", "EntityFrameworkProject\EntityFrameworkProject.csproj", "{6F971680-E2A6-411F-AA81-B052A12C3F93}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlobalMarket.API", "GlobalMarket.API\GlobalMarket.API.csproj", "{A208B8D2-C936-4E39-AD8E-014A22007EE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlobalMarket.Core", "GlobalMarket.Core\GlobalMarket.Core.csproj", "{F54979D9-8BA5-4B57-A1A3-33EF80D5370D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{6F971680-E2A6-411F-AA81-B052A12C3F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F971680-E2A6-411F-AA81-B052A12C3F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F971680-E2A6-411F-AA81-B052A12C3F93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A208B8D2-C936-4E39-AD8E-014A22007EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A208B8D2-C936-4E39-AD8E-014A22007EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A208B8D2-C936-4E39-AD8E-014A22007EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A208B8D2-C936-4E39-AD8E-014A22007EE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F54979D9-8BA5-4B57-A1A3-33EF80D5370D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F54979D9-8BA5-4B57-A1A3-33EF80D5370D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F54979D9-8BA5-4B57-A1A3-33EF80D5370D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F54979D9-8BA5-4B57-A1A3-33EF80D5370D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

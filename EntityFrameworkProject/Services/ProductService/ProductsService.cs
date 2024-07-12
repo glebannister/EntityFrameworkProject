@@ -1,30 +1,31 @@
-﻿using EntityFrameworkProject.Entities.Dto;
+﻿using EntityFrameworkProject.Data;
+using EntityFrameworkProject.Entities.Dto;
 using EntityFrameworkProject.Entities.Model;
 using EntityFrameworkProject.Exceptions;
-using EntityFrameworkProject.Repository.ProductRepo;
 using EntityFrameworkProject.Services.ProductSerivce;
+using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkProject.Services.ProductService
 {
     public class ProductsService : IProductsService
     {
-        private readonly IProductRepository _iProductRepository;
+        private readonly AppDbContext _appDbContext;
 
-        public ProductsService(IProductRepository iProductRepository)
+        public ProductsService(AppDbContext appDbContext)
         {
-            _iProductRepository = iProductRepository;
+            _appDbContext = appDbContext;
         }
 
         public async Task<Product> AddProduct(ProductApiDto productApiDto)
         {
-            var productToAdd = await _iProductRepository.GetProductAsync(productApiDto.Name);
+            var productToAdd = await GetProductDbAsync(productApiDto.Name);
 
             if (productToAdd is null)
             {
                 throw new ConflictException($"Prodcut with the name [{productApiDto.Name}] exists in the DB already");
             }
 
-            var manufacture = await _iProductRepository.GetManufactureAsync(productApiDto.ManufactureId);
+            var manufacture = await GetManufactureDbAsync(productApiDto.ManufactureId);
 
             if (manufacture is null)
             {
@@ -37,31 +38,32 @@ namespace EntityFrameworkProject.Services.ProductService
                 Description = productApiDto.Description,
                 Price = productApiDto.Price,
                 ManufactureId = productApiDto.ManufactureId,
-                Manufacture = await _iProductRepository.GetManufactureAsync(productApiDto.ManufactureId),
+                Manufacture = await GetManufactureDbAsync(productApiDto.ManufactureId),
             };
 
-            await _iProductRepository.AddAsync(newProduct);
+            _appDbContext.Products.Add(newProduct);
+            await _appDbContext.SaveChangesAsync();
 
             return newProduct;
         }
 
         public async Task<Product> UpdateProduct(ProductApiUpdateDto productApiUpdateDto)
         {
-            var productToUpdate = await _iProductRepository.GetProductAsync(productApiUpdateDto.OldName);
+            var productToUpdate = await GetProductDbAsync(productApiUpdateDto.OldName);
 
             if (productToUpdate is null)
             {
                 throw new NotFoundException($"No products with name: [{productApiUpdateDto.OldName}] have been found");
             }
 
-            var possibleExistingProduct = await _iProductRepository.GetProductAsync(productApiUpdateDto.NewName);
+            var possibleExistingProduct = await GetProductDbAsync(productApiUpdateDto.NewName);
 
             if (possibleExistingProduct is not null) 
             {
                 throw new ConflictException($"Product with name: [{productApiUpdateDto.NewName}] exists in the DB already");
             }
 
-            var manufactureToUpdate = await _iProductRepository.GetManufactureAsync(productApiUpdateDto.NewManufactureId);
+            var manufactureToUpdate = await GetManufactureDbAsync(productApiUpdateDto.NewManufactureId);
 
             if (manufactureToUpdate is null)
             {
@@ -73,33 +75,54 @@ namespace EntityFrameworkProject.Services.ProductService
             productToUpdate.ManufactureId = productApiUpdateDto.NewManufactureId;
             productToUpdate.Manufacture = manufactureToUpdate;
 
-            await _iProductRepository.SaveChangesAsync();
+            await _appDbContext.SaveChangesAsync();
 
             return productToUpdate;
         }
 
         public async Task DeleteAllProducts()
         {
-            await _iProductRepository.DeleteAllAsync();
+            await _appDbContext.Products.ForEachAsync(product =>
+            {
+                _appDbContext.Products.Remove(product);
+            });
+            await _appDbContext.SaveChangesAsync();
         }
 
         public async Task<Product> DeleteProduct(string name)
         {
-            var productToDelete = await _iProductRepository.GetProductAsync(name);
+            var productToDelete = await GetProductDbAsync(name);
 
             if (productToDelete is null)
             {
                 throw new NotFoundException($"No products with name: [{name}] were found in the DB");
             }
 
-            await _iProductRepository.DeleteAsync(productToDelete);
+            _appDbContext.Products.Remove(productToDelete);
+            await _appDbContext.SaveChangesAsync();
 
             return productToDelete;
         }
 
         public async Task<List<Product>> GetProductsByManufactureName(string manufactureName)
         {
-            return await _iProductRepository.GetProductsAsync(manufactureName);
+            return await _appDbContext.Products
+                .Include(product => product.Manufacture)
+                .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
+                .ToListAsync();
+        }
+
+        private async Task<Manufacture> GetManufactureDbAsync(int manufactureId)
+        {
+            return await _appDbContext.Manufactures
+                .FirstOrDefaultAsync(manufactue => manufactue.Id == manufactureId);
+        }
+
+        private async Task<Product> GetProductDbAsync(string productName)
+        {
+            return await _appDbContext.Products
+                .Include(product => product.Manufacture)
+                .FirstOrDefaultAsync(product => product.Name.ToLower() == productName.ToLower());
         }
     }
 }
