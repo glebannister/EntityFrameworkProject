@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("globalMarket/api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace GlobalMarket.API.Controllers
             _iProductsService = productsService;
         }
 
-        [HttpGet("GetProductsByManufactureName")]
+        [HttpGet("{manufactureName}")]
         public async Task<IActionResult> GetProductsByManufactureName(string manufactureName) 
         {
             var listOfProducts = await _iProductsService.GetProductsByManufactureName(manufactureName);
@@ -28,7 +28,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(listOfProducts);
         }
 
-        [HttpPost("AddProduct")]
+        [HttpPost]
         public async Task<IActionResult> AddProduct(ProductApi productApiDto) 
         {
             var addedProduct = await _iProductsService.AddProduct(productApiDto);
@@ -36,7 +36,15 @@ namespace GlobalMarket.API.Controllers
             return Ok(addedProduct);
         }
 
-        [HttpDelete("DeleteProduct")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateProduct(ProductUpdateApi productApiUpdateDto)
+        {
+            var productToUpdate = await _iProductsService.UpdateProduct(productApiUpdateDto);
+
+            return Ok(productToUpdate);
+        }
+
+        [HttpDelete("{productName}")]
         public async Task<IActionResult> DeleteProduct(string name)
         {
             await _iProductsService.DeleteProduct(name);
@@ -44,20 +52,12 @@ namespace GlobalMarket.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("DeleteAllProducts")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteAllProducts()
         {
             await _iProductsService.DeleteAllProducts();
 
             return Ok();
-        }
-
-        [HttpPut("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct(ProductUpdateApi productApiUpdateDto) 
-        {
-            var productToUpdate = await _iProductsService.UpdateProduct(productApiUpdateDto);
-
-            return Ok(productToUpdate);
         }
     }
 }

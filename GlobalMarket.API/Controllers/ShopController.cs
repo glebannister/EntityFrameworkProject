@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("globalMarket/api/[controller]")]
     [ApiController]
     public class ShopController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace GlobalMarket.API.Controllers
             _iShopService = iShopService;
         }
 
-        [HttpGet("GetProductsFromShop")]
+        [HttpGet("{shopName}")]
         public async Task<IActionResult> GetProductsFromShop(string shopName)
         {
             var productsFromShop = await _iShopService.GetProductsFromShop(shopName);
@@ -23,7 +23,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(productsFromShop);
         }
 
-        [HttpGet("GetShopsWithProduct")]
+        [HttpGet("{productName}")]
         public async Task<IActionResult> GetShopsWithProduct(string productName)
         {
             var shopsWithProduct = await _iShopService.GetShopsWithProducts(productName);
@@ -31,7 +31,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(shopsWithProduct);
         }
 
-        [HttpPost("AddShop")]
+        [HttpPost]
         public async Task<IActionResult> AddShop(ShopApi shopApiDto)
         {
             var shopToAdd = await _iShopService.AddShop(shopApiDto);
@@ -39,7 +39,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(shopToAdd);
         }
 
-        [HttpPost("AddProductToShop")]
+        [HttpPost("{productName}/{shopName}")]
         public async Task<IActionResult> AddProductToShop(string productName, string shopName)
         {
             var productShop = await _iShopService.AddProductToShop(productName, shopName);
@@ -47,7 +47,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(productShop);
         }
 
-        [HttpPut("UpdateShop")]
+        [HttpPut]
         public async Task<IActionResult> UpdateShop(ShopUpdateApi shopApiUpdateDto)
         {
             var shopUpdate = await _iShopService.UpdateShop(shopApiUpdateDto);
@@ -55,7 +55,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(shopUpdate);
         }
 
-        [HttpDelete("DeleteShop")]
+        [HttpDelete("{shopName}")]
         public async Task<IActionResult> DeleteShop(string name)
         {
             var shopDelete = await _iShopService.DeleteShop(name);
@@ -63,7 +63,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(shopDelete);
         }
 
-        [HttpDelete("DeleteAllShops")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteAllShops()
         {
             await _iShopService.DeleteAllShops();

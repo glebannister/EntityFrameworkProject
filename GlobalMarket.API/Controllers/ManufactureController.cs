@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("globalMarket/api/[controller]")]
     [ApiController]
     public class ManufactureController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace GlobalMarket.API.Controllers
             _iManufatureService = iManufatureService;
         }
 
-        [HttpGet("GetManufactureProducts")]
+        [HttpGet("{manufactureName}")]
         public async Task<IActionResult> GetManufactureProducts(string manufactureName)
         {
             var listOfProducts = await _iManufatureService.GetManufactureProducts(manufactureName);
@@ -23,7 +23,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(listOfProducts);
         }
 
-        [HttpPost("AddManufacture")]
+        [HttpPost]
         public async Task<IActionResult> AddManufacture(ManufactureApi manufactureDto)
         {
             var manufactureToAdd = await _iManufatureService.AddManufacture(manufactureDto);
@@ -31,7 +31,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(manufactureToAdd);
         }
 
-        [HttpPut("UpdateManufacture")]
+        [HttpPut]
         public async Task<IActionResult> UpdateManufacture(ManufactureUpdateApi manufactureDtoUpdate)
         {
             var manufactureToUpdate = await _iManufatureService.UpdateManufacture(manufactureDtoUpdate);
@@ -39,7 +39,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(manufactureToUpdate);
         }
 
-        [HttpDelete("DeleteManufacture")]
+        [HttpDelete("{manufactureName}")]
         public async Task<IActionResult> DeleteManufacture(string manufactureName)
         {
             var manufactureToDelete = await _iManufatureService.DeleteManufacture(manufactureName);
@@ -47,7 +47,7 @@ namespace GlobalMarket.API.Controllers
             return Ok(manufactureToDelete);
         }
 
-        [HttpDelete("DeleteAllManufactures")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteAllManufactures()
         {
             await _iManufatureService.DeleteAllManufactures();
