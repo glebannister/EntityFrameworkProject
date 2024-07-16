@@ -1,5 +1,5 @@
 ﻿using GlobalMarket.Core.Configuration;
-using GlobalMarket.Core.Models.Database;
+using GlobalMarket.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GlobalMarket.Core.Repository
@@ -17,9 +17,9 @@ namespace GlobalMarket.Core.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new ProductConfiguration());
-            modelBuilder.ApplyConfiguration(new ManufactureConfiguration());
-            modelBuilder.ApplyConfiguration(new ProductShopConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ManufactureEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductShopEntityTypeConfiguration());
         }
     }
 }

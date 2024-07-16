@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GlobalMarket.Core.Models.Database
+namespace GlobalMarket.Core.Models
 {
     public class Product
     {

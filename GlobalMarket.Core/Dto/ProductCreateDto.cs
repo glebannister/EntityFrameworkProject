@@ -1,6 +1,6 @@
-﻿namespace GlobalMarket.Core.Models.Api
+﻿namespace GlobalMarket.Dto
 {
-    public class ProductApi
+    public class ProductCreateDto
     {
         public string Name { get; set; }
         public string Description { get; set; }

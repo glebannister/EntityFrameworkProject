@@ -1,13 +1,13 @@
-﻿using GlobalMarket.Core.Models.Api;
-using GlobalMarket.Core.Models.Database;
+﻿using GlobalMarket.Core.Models;
+using GlobalMarket.Dto;
 
-namespace GlobalMarket.Core.Services.ShopService
+namespace GlobalMarket.Core.Services.Interfaces
 {
     public interface IShopService
     {
-        public Task<Shop> AddShop(ShopApi shopApiDto);
+        public Task<Shop> AddShop(ShopCreateDto shopCreateDto);
 
-        public Task<Shop> UpdateShop(ShopUpdateApi shopApiDto);
+        public Task<Shop> UpdateShop(ShopUpdateDto shopUpdateDto);
 
         public Task<ProductShop> AddProductToShop(string productName, string shopName);
 

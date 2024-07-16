@@ -1,72 +1,72 @@
-﻿using GlobalMarket.Core.Models.Api;
-using GlobalMarket.Core.Services.ShopService;
+﻿using GlobalMarket.Core.Services.Interfaces;
+using GlobalMarket.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers
 {
-    [Route("globalMarket/api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ShopController : ControllerBase
     {
-        private readonly IShopService _iShopService;
+        private readonly IShopService _shopService;
 
-        public ShopController(IShopService iShopService)
+        public ShopController(IShopService shopService)
         {
-            _iShopService = iShopService;
+            _shopService = shopService;
         }
 
-        [HttpGet("{shopName}")]
+        [HttpGet("get-products-from-shop/{shopName}")]
         public async Task<IActionResult> GetProductsFromShop(string shopName)
         {
-            var productsFromShop = await _iShopService.GetProductsFromShop(shopName);
+            var productsFromShop = await _shopService.GetProductsFromShop(shopName);
 
             return Ok(productsFromShop);
         }
 
-        [HttpGet("{productName}")]
+        [HttpGet("get-shops-with-product/{productName}")]
         public async Task<IActionResult> GetShopsWithProduct(string productName)
         {
-            var shopsWithProduct = await _iShopService.GetShopsWithProducts(productName);
+            var shopsWithProduct = await _shopService.GetShopsWithProducts(productName);
 
             return Ok(shopsWithProduct);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddShop(ShopApi shopApiDto)
+        [HttpPost("add-shop")]
+        public async Task<IActionResult> AddShop(ShopCreateDto shopCreateDto)
         {
-            var shopToAdd = await _iShopService.AddShop(shopApiDto);
+            var shopToAdd = await _shopService.AddShop(shopCreateDto);
 
             return Ok(shopToAdd);
         }
 
-        [HttpPost("{productName}/{shopName}")]
+        [HttpPost("add-productToShop/{productName}/{shopName}")]
         public async Task<IActionResult> AddProductToShop(string productName, string shopName)
         {
-            var productShop = await _iShopService.AddProductToShop(productName, shopName);
+            var productShop = await _shopService.AddProductToShop(productName, shopName);
 
             return Ok(productShop);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateShop(ShopUpdateApi shopApiUpdateDto)
+        [HttpPut("update-shop")]
+        public async Task<IActionResult> UpdateShop(ShopUpdateDto shopUpdateDto)
         {
-            var shopUpdate = await _iShopService.UpdateShop(shopApiUpdateDto);
+            var shopUpdate = await _shopService.UpdateShop(shopUpdateDto);
 
             return Ok(shopUpdate);
         }
 
-        [HttpDelete("{shopName}")]
+        [HttpDelete("delete-shop/{shopName}")]
         public async Task<IActionResult> DeleteShop(string name)
         {
-            var shopDelete = await _iShopService.DeleteShop(name);
+            var shopDelete = await _shopService.DeleteShop(name);
 
             return Ok(shopDelete);
         }
 
-        [HttpDelete]
+        [HttpDelete("delete-all-shops")]
         public async Task<IActionResult> DeleteAllShops()
         {
-            await _iShopService.DeleteAllShops();
+            await _shopService.DeleteAllShops();
 
             return Ok();
         }

@@ -1,11 +1,11 @@
 ﻿using GlobalMarket.Core.Exceptions;
-using GlobalMarket.Core.ManufactureService;
-using GlobalMarket.Core.Models.Api;
-using GlobalMarket.Core.Models.Database;
+using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
+using GlobalMarket.Core.Services.Interfaces;
+using GlobalMarket.Dto;
 using Microsoft.EntityFrameworkCore;
 
-namespace GlobalMarket.Core.Services.ManufactureService
+namespace GlobalMarket.Core.Services
 {
     public class ManufactureService : IManufatureService
     {
@@ -16,19 +16,19 @@ namespace GlobalMarket.Core.Services.ManufactureService
             _appDbContext = appDbContext;
         }
 
-        public async Task<Manufacture> AddManufacture(ManufactureApi manufactureDto)
+        public async Task<Manufacture> AddManufacture(ManufactureCreateDto manufactureCreateDto)
         {
-            var manufacture = await GetManufactureDbAsync(manufactureDto.Name);
+            var manufacture = await GetManufactureDbAsync(manufactureCreateDto.Name);
 
             if (manufacture is not null)
             {
-                throw new ConflictException($"The manufacture with name: [{manufactureDto.Name}] exists in the DB already");
+                throw new ConflictException($"The manufacture with name: [{manufactureCreateDto.Name}] exists in the DB already");
             }
 
             var manufactureToAdd = new Manufacture
             {
-                Address = manufactureDto.Address,
-                Name = manufactureDto.Name,
+                Address = manufactureCreateDto.Address,
+                Name = manufactureCreateDto.Name,
             };
 
             _appDbContext.Manufactures.Add(manufacture);
@@ -66,24 +66,24 @@ namespace GlobalMarket.Core.Services.ManufactureService
             return manufactureToDelete;
         }
 
-        public async Task<Manufacture> UpdateManufacture(ManufactureUpdateApi manufactureDtoUpdate)
+        public async Task<Manufacture> UpdateManufacture(ManufactureUpdateDto manufactureUpdateDto)
         {
-            var manufactureToUpdate = await GetManufactureDbAsync(manufactureDtoUpdate.OldName);
+            var manufactureToUpdate = await GetManufactureDbAsync(manufactureUpdateDto.OldName);
 
             if (manufactureToUpdate is null)
             {
-                throw new NotFoundException($"No manufactures with name [{manufactureDtoUpdate.OldName}] have been found");
+                throw new NotFoundException($"No manufactures with name [{manufactureUpdateDto.OldName}] have been found");
             }
 
-            var possibleUpdatedManufacture = await GetManufactureDbAsync(manufactureDtoUpdate.NewName);
+            var possibleUpdatedManufacture = await GetManufactureDbAsync(manufactureUpdateDto.NewName);
 
             if (possibleUpdatedManufacture is not null)
             {
-                throw new ConflictException($"Manufacture with name [{manufactureDtoUpdate.NewName}] exists in the DB already");
+                throw new ConflictException($"Manufacture with name [{manufactureUpdateDto.NewName}] exists in the DB already");
             }
 
-            manufactureToUpdate.Name = manufactureDtoUpdate.NewName;
-            manufactureToUpdate.Address = manufactureDtoUpdate.NewAddress;
+            manufactureToUpdate.Name = manufactureUpdateDto.NewName;
+            manufactureToUpdate.Address = manufactureUpdateDto.NewAddress;
 
             await _appDbContext.SaveChangesAsync();
 

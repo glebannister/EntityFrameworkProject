@@ -1,10 +1,10 @@
-﻿using GlobalMarket.Core.Models.Database;
+﻿using GlobalMarket.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GlobalMarket.Core.Configuration
 {
-    public class ProductConfiguration : IEntityTypeConfiguration<Product>
+    public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {

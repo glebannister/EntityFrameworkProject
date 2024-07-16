@@ -1,24 +1,24 @@
-﻿using GlobalMarket.Core.Models.Api;
-using GlobalMarket.Core.Services.ProductSerivce;
+﻿using GlobalMarket.Core.Services.Interfaces;
+using GlobalMarket.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers
 {
-    [Route("globalMarket/api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductsService _iProductsService;
+        private readonly IProductsService _productsService;
 
         public ProductsController(IProductsService productsService)
         {
-            _iProductsService = productsService;
+            _productsService = productsService;
         }
 
-        [HttpGet("{manufactureName}")]
+        [HttpGet("get-products-by-manufacture-name/{manufactureName}")]
         public async Task<IActionResult> GetProductsByManufactureName(string manufactureName) 
         {
-            var listOfProducts = await _iProductsService.GetProductsByManufactureName(manufactureName);
+            var listOfProducts = await _productsService.GetProductsByManufactureName(manufactureName);
 
             if (!listOfProducts.Any()) 
             {
@@ -28,34 +28,34 @@ namespace GlobalMarket.API.Controllers
             return Ok(listOfProducts);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddProduct(ProductApi productApiDto) 
+        [HttpPost("add-product")]
+        public async Task<IActionResult> AddProduct(ProductCreateDto productCreateDto) 
         {
-            var addedProduct = await _iProductsService.AddProduct(productApiDto);
+            var addedProduct = await _productsService.AddProduct(productCreateDto);
 
             return Ok(addedProduct);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateProduct(ProductUpdateApi productApiUpdateDto)
+        [HttpPut("update-product")]
+        public async Task<IActionResult> UpdateProduct(ProductUpdateDto productUpdateDto)
         {
-            var productToUpdate = await _iProductsService.UpdateProduct(productApiUpdateDto);
+            var productToUpdate = await _productsService.UpdateProduct(productUpdateDto);
 
             return Ok(productToUpdate);
         }
 
-        [HttpDelete("{productName}")]
+        [HttpDelete("delete-product/{productName}")]
         public async Task<IActionResult> DeleteProduct(string name)
         {
-            await _iProductsService.DeleteProduct(name);
+            await _productsService.DeleteProduct(name);
 
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("delete-all-products")]
         public async Task<IActionResult> DeleteAllProducts()
         {
-            await _iProductsService.DeleteAllProducts();
+            await _productsService.DeleteAllProducts();
 
             return Ok();
         }

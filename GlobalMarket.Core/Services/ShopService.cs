@@ -1,10 +1,11 @@
 ﻿using GlobalMarket.Core.Exceptions;
-using GlobalMarket.Core.Models.Api;
-using GlobalMarket.Core.Models.Database;
+using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
+using GlobalMarket.Core.Services.Interfaces;
+using GlobalMarket.Dto;
 using Microsoft.EntityFrameworkCore;
 
-namespace GlobalMarket.Core.Services.ShopService
+namespace GlobalMarket.Core.Services
 {
     public class ShopService : IShopService
     {
@@ -19,14 +20,14 @@ namespace GlobalMarket.Core.Services.ShopService
         {
             var shop = await GetShopDbAsync(shopName);
 
-            if (shop is null) 
+            if (shop is null)
             {
                 throw new NotFoundException($"Shop with name: [{shopName}] is not found in the DB");
             }
 
             var productsFromShop = await GetProductsDbAsync(shopName);
 
-            if (!productsFromShop.Any()) 
+            if (!productsFromShop.Any())
             {
                 throw new NotFoundException($"Shop with name: [{shopName}] does not have any products");
             }
@@ -60,19 +61,19 @@ namespace GlobalMarket.Core.Services.ShopService
         {
             var productToAdd = await GetProductDbAsync(productName);
 
-            if (productToAdd is null) 
+            if (productToAdd is null)
             {
                 throw new NotFoundException($"Product with name [{productName}] is not found in the DB");
             }
 
             var shop = await GetShopDbAsync(shopName);
 
-            if (shop is null) 
+            if (shop is null)
             {
                 throw new NotFoundException($"Shop with name [{shopName}] is not found in the DB");
             }
 
-            if (await IsProductExistsInShop(productName, shopName)) 
+            if (await IsProductExistsInShop(productName, shopName))
             {
                 throw new ConflictException($"Product with name [{productName}] exists in the shop [{shopName}] already");
             }
@@ -90,12 +91,12 @@ namespace GlobalMarket.Core.Services.ShopService
             return productShop;
         }
 
-        public async Task<Shop> AddShop(ShopApi shopApiDto)
+        public async Task<Shop> AddShop(ShopCreateDto shopCreateDto)
         {
             var shopToAdd = new Shop
             {
-                Name = shopApiDto.Name,
-                Address = shopApiDto.Address
+                Name = shopCreateDto.Name,
+                Address = shopCreateDto.Address
             };
 
             await AddAsync(shopToAdd);
@@ -117,7 +118,7 @@ namespace GlobalMarket.Core.Services.ShopService
         {
             var shopToDelete = await GetShopDbAsync(name);
 
-            if (shopToDelete is null) 
+            if (shopToDelete is null)
             {
                 throw new NotFoundException($"Shop with name [{name}] is not found in the DB");
             }
@@ -128,24 +129,24 @@ namespace GlobalMarket.Core.Services.ShopService
             return shopToDelete;
         }
 
-        public async Task<Shop> UpdateShop(ShopUpdateApi shopApiUpdateDto)
+        public async Task<Shop> UpdateShop(ShopUpdateDto shopUpdateDto)
         {
-            var shopToUpdate = await GetShopDbAsync(shopApiUpdateDto.OldName);
+            var shopToUpdate = await GetShopDbAsync(shopUpdateDto.OldName);
 
-            if (shopToUpdate is null) 
+            if (shopToUpdate is null)
             {
-                throw new NotFoundException($"Shop with name [{shopApiUpdateDto.NewName}] is not found in the DB");
+                throw new NotFoundException($"Shop with name [{shopUpdateDto.NewName}] is not found in the DB");
             }
 
-            var possibleExistingShop = await GetShopDbAsync(shopApiUpdateDto.NewName);
+            var possibleExistingShop = await GetShopDbAsync(shopUpdateDto.NewName);
 
             if (possibleExistingShop is not null)
             {
-                throw new ConflictException($"Shop with name [{shopApiUpdateDto.NewName}] exists in the DB already");
+                throw new ConflictException($"Shop with name [{shopUpdateDto.NewName}] exists in the DB already");
             }
 
-            shopToUpdate.Name = shopApiUpdateDto.NewName;
-            shopToUpdate.Address = shopApiUpdateDto.NewAddress;
+            shopToUpdate.Name = shopUpdateDto.NewName;
+            shopToUpdate.Address = shopUpdateDto.NewAddress;
 
             await _appDbContext.SaveChangesAsync();
 

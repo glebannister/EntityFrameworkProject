@@ -1,10 +1,7 @@
 using System.Globalization;
-using GlobalMarket.Core.ManufactureService;
 using GlobalMarket.Core.Repository;
-using GlobalMarket.Core.Services.ManufactureService;
-using GlobalMarket.Core.Services.ProductSerivce;
-using GlobalMarket.Core.Services.ProductService;
-using GlobalMarket.Core.Services.ShopService;
+using GlobalMarket.Core.Services;
+using GlobalMarket.Core.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +22,8 @@ builder.Services.AddScoped<IShopService, ShopService>();
 
 var app = builder.Build();
 
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -36,6 +35,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+//app.UseMiddleware<>
 app.MapControllers();
 
 app.Run();

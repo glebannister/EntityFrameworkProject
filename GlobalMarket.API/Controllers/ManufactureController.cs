@@ -1,56 +1,56 @@
-﻿using GlobalMarket.Core.ManufactureService;
-using GlobalMarket.Core.Models.Api;
+﻿using GlobalMarket.Core.Services.Interfaces;
+using GlobalMarket.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers
 {
-    [Route("globalMarket/api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ManufactureController : ControllerBase
     {
-        private readonly IManufatureService _iManufatureService;
+        private readonly IManufatureService _manufatureService;
 
-        public ManufactureController(IManufatureService iManufatureService)
+        public ManufactureController(IManufatureService manufatureService)
         {
-            _iManufatureService = iManufatureService;
+            _manufatureService = manufatureService;
         }
 
-        [HttpGet("{manufactureName}")]
+        [HttpGet("get-manufacture-products/{manufactureName}")]
         public async Task<IActionResult> GetManufactureProducts(string manufactureName)
         {
-            var listOfProducts = await _iManufatureService.GetManufactureProducts(manufactureName);
+            var listOfProducts = await _manufatureService.GetManufactureProducts(manufactureName);
 
             return Ok(listOfProducts);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddManufacture(ManufactureApi manufactureDto)
+        [HttpPost("add-manufacture")]
+        public async Task<IActionResult> AddManufacture(ManufactureCreateDto manufactureCreateDto)
         {
-            var manufactureToAdd = await _iManufatureService.AddManufacture(manufactureDto);
+            var manufactureToAdd = await _manufatureService.AddManufacture(manufactureCreateDto);
 
             return Ok(manufactureToAdd);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateManufacture(ManufactureUpdateApi manufactureDtoUpdate)
+        [HttpPut("update-manufacture")]
+        public async Task<IActionResult> UpdateManufacture(ManufactureUpdateDto manufactureUpdateDto)
         {
-            var manufactureToUpdate = await _iManufatureService.UpdateManufacture(manufactureDtoUpdate);
+            var manufactureToUpdate = await _manufatureService.UpdateManufacture(manufactureUpdateDto);
 
             return Ok(manufactureToUpdate);
         }
 
-        [HttpDelete("{manufactureName}")]
+        [HttpDelete("delete-manufacture/{manufactureName}")]
         public async Task<IActionResult> DeleteManufacture(string manufactureName)
         {
-            var manufactureToDelete = await _iManufatureService.DeleteManufacture(manufactureName);
+            var manufactureToDelete = await _manufatureService.DeleteManufacture(manufactureName);
 
             return Ok(manufactureToDelete);
         }
 
-        [HttpDelete]
+        [HttpDelete("delete-all-manufactures")]
         public async Task<IActionResult> DeleteAllManufactures()
         {
-            await _iManufatureService.DeleteAllManufactures();
+            await _manufatureService.DeleteAllManufactures();
 
             return Ok();
         }
