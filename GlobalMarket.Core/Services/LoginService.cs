@@ -21,13 +21,13 @@ namespace GlobalMarket.Core.Services
             _appDbContext = appDbContext;
         }
 
-        public async Task<SignInResponse> SignInUser(UserLoginDto userSignInDto, JwtSettings jwtSettings)
+        public async Task<SignInResponse> SignInUser(UserSignInDto userSignInDto, JwtSettings jwtSettings)
         {
             var signInUser = await ValidateUser(userSignInDto);
 
             if (signInUser is null) 
             {
-                throw new UnauthorizedException($"User [{userSignInDto.Name}] with email: [{userSignInDto.Email}] did not pass the validation");
+                throw new UnauthorizedException($"User [{userSignInDto.Name}] did not pass the validation");
             }
 
             var token = await _tokenService.GetToken(jwtSettings);
@@ -41,9 +41,13 @@ namespace GlobalMarket.Core.Services
             return signInResponse;
         }
 
-        public async Task<User> SignUpUser(UserLoginDto userSignUpDto)
+        public async Task<User> SignUpUser(UserSignUpDto userSignUpDto)
         {
-            var signUpUser = await ValidateUser(userSignUpDto);
+            var signUpUser = await ValidateUser(new UserSignInDto 
+            {
+                Name = userSignUpDto.Name,
+                Password = userSignUpDto.Password,
+            });
 
             if (signUpUser is not null)
             {
@@ -67,7 +71,7 @@ namespace GlobalMarket.Core.Services
             return newUser;
         }
 
-        private async Task<User> ValidateUser(UserLoginDto userLoginDto) 
+        private async Task<User> ValidateUser(UserSignInDto userLoginDto) 
         {
             var validateUser = await _appDbContext.Users
                 .FirstOrDefaultAsync(user => user.Name == userLoginDto.Name);
@@ -80,7 +84,7 @@ namespace GlobalMarket.Core.Services
             var validateUserHashedPassword = _hashPasswordService.HashPassword(userLoginDto.Password, validateUser.Salt);
 
             return await _appDbContext.Users
-                .FirstOrDefaultAsync(user => user.Email == userLoginDto.Email && user.Password == validateUserHashedPassword);
+                .FirstOrDefaultAsync(user => user.Password == validateUserHashedPassword);
         }
     }
 }

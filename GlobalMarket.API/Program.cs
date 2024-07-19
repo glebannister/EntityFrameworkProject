@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
@@ -7,6 +6,7 @@ using GlobalMarket.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,12 +30,11 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
+        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromSeconds(0),
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
     };
 });
@@ -46,6 +45,37 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IManufatureService, ManufactureService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IShopService, ShopService>();
+
+builder.Services.AddSwaggerGen(options => {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "JWTToken_Auth_API",
+        Version = "v1"
+    });
+
+    var securityScheme = new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme",
+        Reference = new()
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme,
+        }
+    };
+
+    options.AddSecurityDefinition("Bearer", securityScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement {
+            {
+                securityScheme,
+                Array.Empty<string>()
+            }
+        });
+});
 
 var app = builder.Build();
 
@@ -63,6 +93,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 //app.UseMiddleware<>
-app.MapControllers();
+
+app.MapControllers()
+   .RequireAuthorization();
 
 app.Run();

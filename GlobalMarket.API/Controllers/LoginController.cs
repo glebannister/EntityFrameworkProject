@@ -20,22 +20,22 @@ namespace GlobalMarket.API.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUn(UserLoginDto userLoginDto)
-        {
-            var signUpSuer = await _loginService.SignUpUser(userLoginDto);
-
-            return Ok(signUpSuer);
-        }
-
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn(UserLoginDto userLoginDto)
+        public async Task<IActionResult> SignIn(UserSignInDto userLoginDto)
         {
             var jwtSettings = _config.GetSection("Jwt").Get<JwtSettings>();
 
             var signInResponse = await _loginService.SignInUser(userLoginDto, jwtSettings);
 
             return Ok(signInResponse);
+        }
+
+        [HttpPost("sign-up")]
+        public async Task<IActionResult> SignUn(UserSignUpDto userLoginDto)
+        {
+            var signUpSuer = await _loginService.SignUpUser(userLoginDto);
+
+            return Ok(signUpSuer);
         }
     }
 }
