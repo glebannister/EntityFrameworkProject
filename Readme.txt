@@ -28,3 +28,11 @@ Update-Database 0 / dotnet ef database update 0
 
 ?* Авторизация, куки, кэш, middleware с обработчиками ошибок
 ?* Фильтрация
+
+ "Jwt": {
+     "Key": "MySuperSecretKeyHere - нужно сгенерить. https://generate.plus/en/base64
+
+Хэширование:
+1. https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.cryptography.keyderivation.keyderivation.pbkdf2?view=aspnetcore-8.0
+Хэшированный пароль хранится в БД
+2. Эта же функция будет юзать и при аутентификации
