@@ -1,4 +1,5 @@
 using System.Text;
+using GlobalMarket.API.Middleware;
 using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
 using GlobalMarket.Core.Services;
@@ -45,6 +46,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IManufatureService, ManufactureService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IShopService, ShopService>();
+builder.Services.AddSingleton<ExceptionHandlerMiddleware>();
 
 builder.Services.AddSwaggerGen(options => {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -79,7 +81,6 @@ builder.Services.AddSwaggerGen(options => {
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -92,7 +93,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-//app.UseMiddleware<>
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapControllers()
    .RequireAuthorization();

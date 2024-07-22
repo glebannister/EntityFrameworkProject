@@ -41,6 +41,7 @@ namespace GlobalMarket.Core.Services
         {
             var listOfProducts = _appDbContext.Products
                 .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
+                .Include(product => product.Manufacture)
                 .ToList();
 
             if (!listOfProducts.Any())
