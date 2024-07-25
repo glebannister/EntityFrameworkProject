@@ -17,10 +17,10 @@ namespace GlobalMarket.Core.Models
 
         [Required]
         [MaxLength(100)]
-        public string Password { get; set; }
+        public byte[] PasswordHash { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public byte[] Salt { get; set; }
+        public byte[] PasswordSalt { get; set; }
     }
 }

@@ -21,7 +21,13 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("AppDbConnectionString");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString, builder => builder.MigrationsAssembly("GlobalMarket.API")));
 
-var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+builder.Services.AddOptions<JwtSettings>()
+    .Bind(builder.Configuration.GetSection("JwtSettings"))
+    .ValidateOnStart()
+    .ValidateDataAnnotations();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,7 +57,7 @@ builder.Services.AddSingleton<ExceptionHandlerMiddleware>();
 builder.Services.AddSwaggerGen(options => {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "JWTToken_Auth_API",
+        Title = "GlobalMarket",
         Version = "v1"
     });
 

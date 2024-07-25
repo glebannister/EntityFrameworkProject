@@ -14,7 +14,7 @@ namespace GlobalMarket.API.Middleware
             {
                 await Results.NotFound(ex.Message).ExecuteAsync(context);
             }
-            catch (ConflictException ex)
+            catch (AlreadyExistException ex)
             {
                 await Results.Conflict(ex.Message).ExecuteAsync(context);
             }

@@ -2,6 +2,6 @@
 {
     public interface IHashPasswordService
     {
-        public string HashPassword(string password, byte[] salt);
+        public byte[] HashPassword(string password, byte[] salt);
     }
 }

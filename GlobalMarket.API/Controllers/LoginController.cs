@@ -3,6 +3,7 @@ using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace GlobalMarket.API.Controllers
 {
@@ -11,21 +12,19 @@ namespace GlobalMarket.API.Controllers
     [AllowAnonymous]
     public class LoginController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly JwtSettings _jwtSettings;
         private readonly ILoginService _loginService;
 
-        public LoginController(IConfiguration config, ILoginService loginService) 
+        public LoginController(IOptions<JwtSettings> options, ILoginService loginService) 
         {
-            _config = config;
+            _jwtSettings = options.Value;
             _loginService = loginService;
         }
 
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(UserSignInDto userLoginDto)
         {
-            var jwtSettings = _config.GetSection("Jwt").Get<JwtSettings>();
-
-            var signInResponse = await _loginService.SignInUser(userLoginDto, jwtSettings);
+            var signInResponse = await _loginService.SignInUser(userLoginDto, _jwtSettings);
 
             return Ok(signInResponse);
         }

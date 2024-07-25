@@ -23,7 +23,7 @@ namespace GlobalMarket.Core.Services
 
         public async Task<SignInResponse> SignInUser(UserSignInDto userSignInDto, JwtSettings jwtSettings)
         {
-            var signInUser = await ValidateUser(userSignInDto);
+            var signInUser = await GetRegistredUser(userSignInDto);
 
             if (signInUser is null) 
             {
@@ -43,7 +43,7 @@ namespace GlobalMarket.Core.Services
 
         public async Task<User> SignUpUser(UserSignUpDto userSignUpDto)
         {
-            var signUpUser = await ValidateUser(new UserSignInDto 
+            var signUpUser = await GetRegistredUser(new UserSignInDto 
             {
                 Name = userSignUpDto.Name,
                 Password = userSignUpDto.Password,
@@ -51,7 +51,7 @@ namespace GlobalMarket.Core.Services
 
             if (signUpUser is not null)
             {
-                throw new ConflictException($"User {userSignUpDto.Name} with email: [{userSignUpDto.Email}] exists in the DB already");
+                throw new AlreadyExistException($"User {userSignUpDto.Name} with email: [{userSignUpDto.Email}] exists in the DB already");
             }
 
             byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
@@ -61,8 +61,8 @@ namespace GlobalMarket.Core.Services
             {
                 Name = userSignUpDto.Name,
                 Email = userSignUpDto.Email,
-                Password = hashPassword,
-                Salt = salt
+                PasswordHash = hashPassword,
+                PasswordSalt = salt
             };
 
             _appDbContext.Users.Add(newUser);
@@ -71,20 +71,24 @@ namespace GlobalMarket.Core.Services
             return newUser;
         }
 
-        private async Task<User> ValidateUser(UserSignInDto userLoginDto) 
+        private async Task<User> GetRegistredUser(UserSignInDto userLoginDto) 
         {
-            var validateUser = await _appDbContext.Users
+            var registredUser = await _appDbContext.Users
                 .FirstOrDefaultAsync(user => user.Name == userLoginDto.Name);
 
-            if (validateUser is null) 
+            if (registredUser is null) 
             {
                 return null;
             }
 
-            var validateUserHashedPassword = _hashPasswordService.HashPassword(userLoginDto.Password, validateUser.Salt);
+            var registredUserHashedPassword = _hashPasswordService.HashPassword(userLoginDto.Password, registredUser.PasswordSalt);
 
-            return await _appDbContext.Users
-                .FirstOrDefaultAsync(user => user.Password == validateUserHashedPassword);
+            if (!Enumerable.SequenceEqual(registredUserHashedPassword, registredUser.PasswordHash)) 
+            {
+                return null;
+            }
+
+            return registredUser;
         }
     }
 }

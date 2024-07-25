@@ -22,7 +22,7 @@ namespace GlobalMarket.Core.Services
 
             if (productToAdd is null)
             {
-                throw new ConflictException($"Prodcut with the name [{productCreateDto.Name}] exists in the DB already");
+                throw new AlreadyExistException($"Prodcut with the name [{productCreateDto.Name}] exists in the DB already");
             }
 
             var manufacture = await GetManufactureDbAsync(productCreateDto.ManufactureId);
@@ -60,7 +60,7 @@ namespace GlobalMarket.Core.Services
 
             if (possibleExistingProduct is not null)
             {
-                throw new ConflictException($"Product with name: [{productUpdateDto.NewName}] exists in the DB already");
+                throw new AlreadyExistException($"Product with name: [{productUpdateDto.NewName}] exists in the DB already");
             }
 
             var manufactureToUpdate = await GetManufactureDbAsync(productUpdateDto.NewManufactureId);
