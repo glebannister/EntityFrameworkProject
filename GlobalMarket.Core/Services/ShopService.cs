@@ -75,7 +75,7 @@ namespace GlobalMarket.Core.Services
 
             if (await IsProductExistsInShop(productName, shopName))
             {
-                throw new ConflictException($"Product with name [{productName}] exists in the shop [{shopName}] already");
+                throw new AlreadyExistException($"Product with name [{productName}] exists in the shop [{shopName}] already");
             }
 
             var productShop = new ProductShop
@@ -142,7 +142,7 @@ namespace GlobalMarket.Core.Services
 
             if (possibleExistingShop is not null)
             {
-                throw new ConflictException($"Shop with name [{shopUpdateDto.NewName}] exists in the DB already");
+                throw new AlreadyExistException($"Shop with name [{shopUpdateDto.NewName}] exists in the DB already");
             }
 
             shopToUpdate.Name = shopUpdateDto.NewName;

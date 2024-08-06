@@ -5,9 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<InvariantGlobalization>false</InvariantGlobalization>
+	<BaseOutputPath>..\GlobalMarket.Core\GlobalMarket.Core\bin\</BaseOutputPath>
+	<UserSecretsId>5a7d1427-249c-4974-a87e-378c440ca0ad</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,9 +21,5 @@
   <ItemGroup>
     <ProjectReference Include="..\GlobalMarket.Core\GlobalMarket.Core.csproj" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <BaseOutputPath>..\GlobalMarket.Core\GlobalMarket.Core\bin\</BaseOutputPath>
-  </PropertyGroup>
 
 </Project>

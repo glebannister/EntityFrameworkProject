@@ -1,8 +1,7 @@
-﻿using GlobalMarket.Core.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace GlobalMarket.Core.Configuration
+namespace GlobalMarket.Core.Models.Configurations
 {
     public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
     {

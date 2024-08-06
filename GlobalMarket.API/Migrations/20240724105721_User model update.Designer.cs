@@ -3,25 +3,28 @@ using GlobalMarket.Core.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace GlobalMarket.Core.Migrations
+namespace GlobalMarket.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240724105721_User model update")]
+    partial class Usermodelupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GlobalMarket.Core.Models.Database.Manufacture", b =>
+            modelBuilder.Entity("GlobalMarket.Core.Models.Manufacture", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +50,7 @@ namespace GlobalMarket.Core.Migrations
                     b.ToTable("Manufactures");
                 });
 
-            modelBuilder.Entity("GlobalMarket.Core.Models.Database.Product", b =>
+            modelBuilder.Entity("GlobalMarket.Core.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -81,7 +84,7 @@ namespace GlobalMarket.Core.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("GlobalMarket.Core.Models.Database.ProductShop", b =>
+            modelBuilder.Entity("GlobalMarket.Core.Models.ProductShop", b =>
                 {
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -96,7 +99,7 @@ namespace GlobalMarket.Core.Migrations
                     b.ToTable("ProductShops");
                 });
 
-            modelBuilder.Entity("GlobalMarket.Core.Models.Database.Shop", b =>
+            modelBuilder.Entity("GlobalMarket.Core.Models.Shop", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,9 +122,45 @@ namespace GlobalMarket.Core.Migrations
                     b.ToTable("Shops");
                 });
 
-            modelBuilder.Entity("GlobalMarket.Core.Models.Database.Product", b =>
+            modelBuilder.Entity("GlobalMarket.Core.Models.User", b =>
                 {
-                    b.HasOne("GlobalMarket.Core.Models.Database.Manufacture", "Manufacture")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varbinary(100)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varbinary(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("GlobalMarket.Core.Models.Product", b =>
+                {
+                    b.HasOne("GlobalMarket.Core.Models.Manufacture", "Manufacture")
                         .WithMany()
                         .HasForeignKey("ManufactureId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -130,15 +169,15 @@ namespace GlobalMarket.Core.Migrations
                     b.Navigation("Manufacture");
                 });
 
-            modelBuilder.Entity("GlobalMarket.Core.Models.Database.ProductShop", b =>
+            modelBuilder.Entity("GlobalMarket.Core.Models.ProductShop", b =>
                 {
-                    b.HasOne("GlobalMarket.Core.Models.Database.Product", "Product")
+                    b.HasOne("GlobalMarket.Core.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GlobalMarket.Core.Models.Database.Shop", "Shop")
+                    b.HasOne("GlobalMarket.Core.Models.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -1,5 +1,5 @@
-﻿using GlobalMarket.Core.Configuration;
-using GlobalMarket.Core.Models;
+﻿using GlobalMarket.Core.Models;
+using GlobalMarket.Core.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace GlobalMarket.Core.Repository
@@ -14,12 +14,14 @@ namespace GlobalMarket.Core.Repository
         public DbSet<Product> Products { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<ProductShop> ProductShops { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ManufactureEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProductShopEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
         }
     }
 }

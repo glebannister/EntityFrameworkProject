@@ -22,7 +22,7 @@ namespace GlobalMarket.Core.Services
 
             if (manufacture is not null)
             {
-                throw new ConflictException($"The manufacture with name: [{manufactureCreateDto.Name}] exists in the DB already");
+                throw new AlreadyExistException($"The manufacture with name: [{manufactureCreateDto.Name}] exists in the DB already");
             }
 
             var manufactureToAdd = new Manufacture
@@ -41,6 +41,7 @@ namespace GlobalMarket.Core.Services
         {
             var listOfProducts = _appDbContext.Products
                 .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
+                .Include(product => product.Manufacture)
                 .ToList();
 
             if (!listOfProducts.Any())
@@ -79,7 +80,7 @@ namespace GlobalMarket.Core.Services
 
             if (possibleUpdatedManufacture is not null)
             {
-                throw new ConflictException($"Manufacture with name [{manufactureUpdateDto.NewName}] exists in the DB already");
+                throw new AlreadyExistException($"Manufacture with name [{manufactureUpdateDto.NewName}] exists in the DB already");
             }
 
             manufactureToUpdate.Name = manufactureUpdateDto.NewName;

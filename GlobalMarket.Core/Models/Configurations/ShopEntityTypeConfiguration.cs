@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace GlobalMarket.Core.Configuration
+namespace GlobalMarket.Core.Models.Configurations
 {
     public class ShopEntityTypeConfiguration : IEntityTypeConfiguration<Shop>
     {
