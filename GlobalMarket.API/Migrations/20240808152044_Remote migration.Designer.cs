@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GlobalMarket.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240719093027_User salt migration")]
-    partial class Usersaltmigration
+    [Migration("20240808152044_Remote migration")]
+    partial class Remotemigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -140,12 +140,12 @@ namespace GlobalMarket.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Password")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("varbinary(100)");
 
-                    b.Property<byte[]>("Salt")
+                    b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varbinary(100)");
