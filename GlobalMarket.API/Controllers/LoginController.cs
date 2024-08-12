@@ -32,9 +32,16 @@ namespace GlobalMarket.API.Controllers
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUn(UserSignUpDto userLoginDto)
         {
-            var signUpSuer = await _loginService.SignUpUser(userLoginDto);
+            var signUpUser = await _loginService.SignUpUser(userLoginDto);
 
-            return Ok(signUpSuer);
+            var signUpUserResponse = new UserSignInDto
+            {
+                Name = signUpUser.Name,
+                Password = "********"
+                
+            };
+
+            return Ok(signUpUserResponse);
         }
     }
 }
