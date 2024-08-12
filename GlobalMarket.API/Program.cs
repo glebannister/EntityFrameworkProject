@@ -18,8 +18,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("AppDbConnectionString");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString, builder => builder.MigrationsAssembly("GlobalMarket.API")));
+var connectionStringApplicationConfiguratio = builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("APP_CONFIGURATION"));
+
+builder.Configuration.AddAzureAppConfiguration(connectionStringApplicationConfiguratio);
+
+var connectionStringDataBase = builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("ConnectionStrings:AppDbConnectionString"));
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionStringDataBase,
+    builder => builder.MigrationsAssembly("GlobalMarket.API"))
+);
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
@@ -87,11 +94,11 @@ builder.Services.AddSwaggerGen(options => {
 
 var app = builder.Build();
 
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
