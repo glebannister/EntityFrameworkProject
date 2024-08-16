@@ -31,7 +31,7 @@ namespace GlobalMarket.Core.Services
                 Name = manufactureCreateDto.Name,
             };
 
-            _appDbContext.Manufactures.Add(manufacture);
+            _appDbContext.Manufactures.Add(manufactureToAdd);
             await _appDbContext.SaveChangesAsync();
 
             return manufactureToAdd;

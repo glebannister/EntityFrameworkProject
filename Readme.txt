@@ -36,3 +36,5 @@ Update-Database 0 / dotnet ef database update 0
 1. https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.cryptography.keyderivation.keyderivation.pbkdf2?view=aspnetcore-8.0
 Хэшированный пароль хранится в БД
 2. Эта же функция будет юзать и при аутентификации
+
+AzureSearch + AzureServiceBase

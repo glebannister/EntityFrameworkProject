@@ -18,8 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionStringApplicationConfiguratio = builder.Configuration
-    .GetConnectionString(Environment.GetEnvironmentVariable("APP_CONFIGURATION"));
+var connectionStringApplicationConfiguratio = Environment.GetEnvironmentVariable("APP_CONFIGURATION");
 
 builder.Configuration.AddAzureAppConfiguration(connectionStringApplicationConfiguratio);
 
