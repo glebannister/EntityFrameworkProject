@@ -18,11 +18,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionStringApplicationConfiguratio = builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("APP_CONFIGURATION"));
+var connectionStringApplicationConfiguratio = builder.Configuration
+    .GetConnectionString(Environment.GetEnvironmentVariable("APP_CONFIGURATION"));
 
 builder.Configuration.AddAzureAppConfiguration(connectionStringApplicationConfiguratio);
 
-var connectionStringDataBase = builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("ConnectionStrings:AppDbConnectionString"));
+var connectionStringDataBase = builder.Configuration.GetValue<string>("AppDbConnectionString");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionStringDataBase,
     builder => builder.MigrationsAssembly("GlobalMarket.API"))
