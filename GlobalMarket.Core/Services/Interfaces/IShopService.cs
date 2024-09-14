@@ -1,4 +1,5 @@
-﻿using GlobalMarket.Core.Models;
+﻿using GlobalMarket.Core.Dto;
+using GlobalMarket.Core.Models;
 using GlobalMarket.Dto;
 
 namespace GlobalMarket.Core.Services.Interfaces
@@ -15,7 +16,7 @@ namespace GlobalMarket.Core.Services.Interfaces
 
         public Task DeleteAllShops();
 
-        public Task<List<Product>> GetProductsFromShop(string shopName);
+        public Task<List<GetProductDto>> GetProductsFromShop(string shopName);
 
         public Task<List<Shop>> GetShopsWithProducts(string productName);
     }

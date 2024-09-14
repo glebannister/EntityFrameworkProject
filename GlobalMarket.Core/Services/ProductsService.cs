@@ -1,4 +1,5 @@
-﻿using GlobalMarket.Core.Exceptions;
+﻿using GlobalMarket.Core.Dto;
+using GlobalMarket.Core.Exceptions;
 using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
 using GlobalMarket.Core.Services.Interfaces;
@@ -104,12 +105,23 @@ namespace GlobalMarket.Core.Services
             return productToDelete;
         }
 
-        public async Task<List<Product>> GetProductsByManufactureName(string manufactureName)
+        public async Task<List<GetProductDto>> GetProductsByManufactureName(string manufactureName)
         {
-            return await _appDbContext.Products
+            var products = await _appDbContext.Products
                 .Include(product => product.Manufacture)
                 .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
                 .ToListAsync();
+
+            var result = products.Select(product => new GetProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Manufacture = product.Manufacture
+            }).ToList();
+
+            return result;
         }
 
         private async Task<Manufacture> GetManufactureDbAsync(int manufactureId)

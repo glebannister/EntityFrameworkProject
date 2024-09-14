@@ -1,11 +1,12 @@
-﻿using GlobalMarket.Core.Models;
+﻿using GlobalMarket.Core.Dto;
+using GlobalMarket.Core.Models;
 using GlobalMarket.Dto;
 
 namespace GlobalMarket.Core.Services.Interfaces
 {
     public interface IManufatureService
     {
-        public Task<List<Product>> GetManufactureProducts(string manufactureName);
+        public Task<List<GetProductDto>> GetManufactureProducts(string manufactureName);
 
         public Task<Manufacture> AddManufacture(ManufactureCreateDto manufactureCreateDto);
 

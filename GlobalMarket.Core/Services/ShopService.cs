@@ -1,4 +1,5 @@
-﻿using GlobalMarket.Core.Exceptions;
+﻿using GlobalMarket.Core.Dto;
+using GlobalMarket.Core.Exceptions;
 using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
 using GlobalMarket.Core.Services.Interfaces;
@@ -16,7 +17,7 @@ namespace GlobalMarket.Core.Services
             _appDbContext = appDbContext;
         }
 
-        public async Task<List<Product>> GetProductsFromShop(string shopName)
+        public async Task<List<GetProductDto>> GetProductsFromShop(string shopName)
         {
             var shop = await GetShopDbAsync(shopName);
 
@@ -26,13 +27,22 @@ namespace GlobalMarket.Core.Services
             }
 
             var productsFromShop = await GetProductsDbAsync(shopName);
-
+            
             if (!productsFromShop.Any())
             {
                 throw new NotFoundException($"Shop with name: [{shopName}] does not have any products");
             }
 
-            return productsFromShop;
+            var resultProductsList = productsFromShop.Select(product => new GetProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Manufacture = product.Manufacture
+            }).ToList();
+
+            return resultProductsList;
         }
 
         public async Task<List<Shop>> GetShopsWithProducts(string productName)

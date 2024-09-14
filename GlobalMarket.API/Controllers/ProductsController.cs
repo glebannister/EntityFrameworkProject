@@ -1,5 +1,6 @@
 ﻿using GlobalMarket.Core.Services.Interfaces;
 using GlobalMarket.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlobalMarket.API.Controllers

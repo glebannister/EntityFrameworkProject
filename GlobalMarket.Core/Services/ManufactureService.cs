@@ -1,4 +1,5 @@
-﻿using GlobalMarket.Core.Exceptions;
+﻿using GlobalMarket.Core.Dto;
+using GlobalMarket.Core.Exceptions;
 using GlobalMarket.Core.Models;
 using GlobalMarket.Core.Repository;
 using GlobalMarket.Core.Services.Interfaces;
@@ -37,7 +38,7 @@ namespace GlobalMarket.Core.Services
             return manufactureToAdd;
         }
 
-        public async Task<List<Product>> GetManufactureProducts(string manufactureName)
+        public async Task<List<GetProductDto>> GetManufactureProducts(string manufactureName)
         {
             var listOfProducts = _appDbContext.Products
                 .Where(product => product.Manufacture.Name.ToLower() == manufactureName.ToLower())
@@ -49,7 +50,16 @@ namespace GlobalMarket.Core.Services
                 throw new NotFoundException($"No manufactures with name [{manufactureName}] have been found");
             }
 
-            return listOfProducts;
+            var resultList = listOfProducts.Select(product => new GetProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Manufacture = product.Manufacture
+            }).ToList();
+
+            return resultList;
         }
 
         public async Task<Manufacture> DeleteManufacture(string manufactureName)
