@@ -26,6 +26,8 @@ if (connectionStringApplicationConfiguration is not null)
 
 }
 
+builder.Configuration.AddEnvironmentVariables("GM_");
+
 var connectionStringDataBase = builder.Configuration.GetValue<string>("ConnectionStrings:AppDbConnectionString");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionStringDataBase,
