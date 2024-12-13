@@ -1,6 +1,0 @@
-@EntityFrameworkProject_HostAddress = http://localhost:5053
-
-GET {{EntityFrameworkProject_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
