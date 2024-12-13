@@ -50,14 +50,15 @@ Dockerizing the App:
 3. Create a .dockerignore file which has the same function as .gitignore
 4. Create .env file where values of some of the Environment variables will be stored
 
- - * Connection to the BD inside the Docker container can be made with an updated connection string where the Server is 'Server=host.docker.internal,'
+ - * Connection to the BD inside the Docker container can be made with an updated connection string where the Server is 'Server=db,1433(container port, that is defined in the docker-compose file)'
 with port number and user and password must be in the connection string. Password is defined in the docker-compose.yml file. 
 The connection string is stored in .env (Values from the .env file should be bound with Environment values in the docket-compose.yml and then will be read in the App)*
  - * To apply the migration on the empty DB in the container an option is to run only the db service of the docker-compose.yml and then update the connection
 string in the App and apply migrations manually*
 
 Note to remember. Every time when the container with the DB shutted down it delets all data, that was in the DB
-Next time, when the container is deployed migrations are needed to be applied
+Next time, when the container is deployed migrations are needed to be applied. Outside the docker container, the connection string should be
+"Server=localhost,8002(external port, that is defined in the docker-compose file)"
 
 Docker commands:
  - docker-compose up --build (build the docker-compose.yml)
